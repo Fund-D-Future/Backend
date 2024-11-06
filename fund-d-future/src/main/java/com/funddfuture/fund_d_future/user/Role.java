@@ -3,49 +3,52 @@ package com.funddfuture.fund_d_future.user;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import static com.funddfuture.fund_d_future.user.Permission.ADMIN_CREATE;
-import static com.funddfuture.fund_d_future.user.Permission.ADMIN_READ;
-import static com.funddfuture.fund_d_future.user.Permission.ADMIN_UPDATE;
-import static com.funddfuture.fund_d_future.user.Permission.ADMIN_DELETE;
-import static com.funddfuture.fund_d_future.user.Permission.MANAGER_CREATE;
-import static com.funddfuture.fund_d_future.user.Permission.MANAGER_READ;
-import static com.funddfuture.fund_d_future.user.Permission.MANAGER_UPDATE;
-import static com.funddfuture.fund_d_future.user.Permission.MANAGER_DELETE;
+
+import static com.funddfuture.fund_d_future.user.Permission.*;
 
 
+@Getter
 @RequiredArgsConstructor
 public enum Role {
 
-  USER(Collections.emptySet()),
+  USER(
+            Set.of(
+                    USER_READ,
+                    USER_UPDATE,
+                    USER_CREATE,
+                    USER_DELETE
+            )
+  ),
   ADMIN(
           Set.of(
                   ADMIN_READ,
                   ADMIN_UPDATE,
                   ADMIN_DELETE,
                   ADMIN_CREATE,
-                  MANAGER_READ,
-                  MANAGER_UPDATE,
-                  MANAGER_DELETE,
-                  MANAGER_CREATE
+                  USER_READ,
+                  USER_UPDATE,
+                  USER_CREATE,
+                  USER_DELETE,
+                  FUNDER_READ,
+                  FUNDER_UPDATE,
+                  FUNDER_CREATE,
+                  FUNDER_DELETE
           )
   ),
-  MANAGER(
+  FUNDER(
           Set.of(
-                  MANAGER_READ,
-                  MANAGER_UPDATE,
-                  MANAGER_DELETE,
-                  MANAGER_CREATE
+                  FUNDER_READ,
+                  FUNDER_UPDATE,
+                  FUNDER_CREATE,
+                  FUNDER_DELETE
           )
   )
 
   ;
 
-  @Getter
   private final Set<Permission> permissions;
 
   public List<SimpleGrantedAuthority> getAuthorities() {

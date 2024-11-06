@@ -1,12 +1,16 @@
 package com.funddfuture.fund_d_future;
 
+import com.funddfuture.fund_d_future.auth.AuthenticationService;
+import com.funddfuture.fund_d_future.auth.RegisterRequest;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RestController;
+import static com.funddfuture.fund_d_future.user.Role.ADMIN;
+import static com.funddfuture.fund_d_future.user.Role.FUNDER;
+import static com.funddfuture.fund_d_future.user.Role.USER;
 
-import java.util.Arrays;
-import java.util.List;
 
 @SpringBootApplication
 @RestController
@@ -16,15 +20,39 @@ public class FundDFutureApplication {
 		SpringApplication.run(FundDFutureApplication.class, args);
 	}
 
-	@GetMapping
-	public String helloWorld() {
-		return "Hello, BrainTrust!";
-	}
+	@Bean
+	public CommandLineRunner commandLineRunner(
+			AuthenticationService service
+	) {
+		return args -> {
+			var admin = RegisterRequest.builder()
+					.firstname("Admin")
+					.lastname("Admin")
+					.email("admin@mail.com")
+					.password("password")
+					.role(ADMIN)
+					.build();
+			System.out.println("Admin token: " + service.register(admin).getAccessToken());
 
-	@GetMapping("/data")
-	public List<String> getData() {
-		// Fetch data from your database
-		return Arrays.asList("Data 1", "Data 2", "Data 3");
+			var funder = RegisterRequest.builder()
+					.firstname("Funder")
+					.lastname("Funder")
+					.email("funder@mail.com")
+					.password("password")
+					.role(FUNDER)
+					.build();
+			System.out.println("Funder token: " + service.register(funder).getAccessToken());
+
+			var user = RegisterRequest.builder()
+					.firstname("User")
+					.lastname("User")
+					.email("user@mail.com")
+					.password("password")
+					.role(USER)
+					.build();
+			System.out.println("User token: " + service.register(user).getAccessToken());
+
+		};
 	}
 
 }
