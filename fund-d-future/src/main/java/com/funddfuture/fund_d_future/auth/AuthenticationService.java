@@ -28,6 +28,10 @@ public class AuthenticationService {
   private final AuthenticationManager authenticationManager;
 
   public AuthenticationResponse register(RegisterRequest request) {
+    // check if password and confirmPassword are equal
+    if (!request.getPassword().equals(request.getConfirmPassword())) {
+      throw new IllegalStateException("Password and confirmPassword are not equal");
+    }
     var user = User.builder()
         .firstname(request.getFirstname())
         .lastname(request.getLastname())
