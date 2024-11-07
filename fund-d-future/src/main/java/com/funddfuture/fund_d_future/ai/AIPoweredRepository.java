@@ -10,6 +10,6 @@ import java.util.UUID;
 
 public interface AIPoweredRepository extends JpaRepository<Campaign, UUID> {
 
-    @Query("SELECT c FROM Campaign c WHERE c.user.id = :userId")
+    @Query("SELECT c FROM Campaign c WHERE c.owner.id = :userId")
     List<Campaign> findRecommendedCampaigns(@Param("userId") UUID userId);
 }

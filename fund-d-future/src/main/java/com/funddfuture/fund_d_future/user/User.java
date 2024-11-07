@@ -2,16 +2,16 @@ package com.funddfuture.fund_d_future.user;
 
 import com.funddfuture.fund_d_future.token.Token;
 import jakarta.persistence.*;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -28,6 +28,9 @@ public class User implements UserDetails {
   private String lastname;
   private String email;
   private String password;
+
+  @Enumerated(EnumType.STRING)
+  private CountryList residentCountry;
 
   @Enumerated(EnumType.STRING)
   private Role role;
@@ -69,4 +72,5 @@ public class User implements UserDetails {
   public boolean isEnabled() {
     return true;
   }
+
 }

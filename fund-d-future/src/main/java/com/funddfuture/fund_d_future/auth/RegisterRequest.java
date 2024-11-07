@@ -1,5 +1,6 @@
 package com.funddfuture.fund_d_future.auth;
 
+import com.funddfuture.fund_d_future.user.CountryList;
 import com.funddfuture.fund_d_future.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +19,5 @@ public class RegisterRequest {
   private String password;
   private String confirmPassword;
   private Role role;
+  private CountryList residentCountry;
 }

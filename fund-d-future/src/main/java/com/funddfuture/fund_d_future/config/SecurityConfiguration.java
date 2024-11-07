@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-
 import static com.funddfuture.fund_d_future.user.Permission.*;
 import static com.funddfuture.fund_d_future.user.Role.*;
 import static org.springframework.aot.generate.ValueCodeGenerator.withDefaults;

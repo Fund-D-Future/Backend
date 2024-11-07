@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CampaignRepository extends JpaRepository<Campaign, UUID> {
-    @Query("SELECT c FROM Campaign c WHERE c.ownerId = :ownerId")
+    @Query("SELECT c FROM Campaign c WHERE c.id = :ownerId")
     List<Campaign> findByOwnerId(@Param("ownerId") UUID ownerId);
 }

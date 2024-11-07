@@ -20,7 +20,7 @@ public class FileService {
     private FileRepository fileRepository;
 
     @Autowired
-    private AmazonS3 amazonS3;
+    private static AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
