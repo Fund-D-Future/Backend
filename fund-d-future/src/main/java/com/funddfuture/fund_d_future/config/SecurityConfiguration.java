@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import static com.funddfuture.fund_d_future.user.Permission.*;
 import static com.funddfuture.fund_d_future.user.Role.*;
+import static org.springframework.aot.generate.ValueCodeGenerator.withDefaults;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -39,7 +40,9 @@ public class SecurityConfiguration {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html"};
+            "/swagger-ui.html",
+            "/oauth2/google",
+            "/oauth2/google/callback",};
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
@@ -58,6 +61,9 @@ public class SecurityConfiguration {
                                 .requestMatchers(DELETE, "/api/v1/funding/**").hasAnyAuthority(ADMIN_DELETE.name(), FUNDER_DELETE.name())
 //                                .anyRequest()
 //                                .authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("/oauth2/google/callback")
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

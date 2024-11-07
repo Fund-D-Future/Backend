@@ -30,6 +30,7 @@ public class FundDFutureApplication {
 					.lastname("Admin")
 					.email("admin@mail.com")
 					.password("password")
+					.confirmPassword("password")
 					.role(ADMIN)
 					.build();
 			System.out.println("Admin token: " + service.register(admin).getAccessToken());
@@ -39,6 +40,7 @@ public class FundDFutureApplication {
 					.lastname("Funder")
 					.email("funder@mail.com")
 					.password("password")
+					.confirmPassword("password")
 					.role(FUNDER)
 					.build();
 			System.out.println("Funder token: " + service.register(funder).getAccessToken());
@@ -48,6 +50,7 @@ public class FundDFutureApplication {
 					.lastname("User")
 					.email("user@mail.com")
 					.password("password")
+					.confirmPassword("password")
 					.role(USER)
 					.build();
 			System.out.println("User token: " + service.register(user).getAccessToken());
