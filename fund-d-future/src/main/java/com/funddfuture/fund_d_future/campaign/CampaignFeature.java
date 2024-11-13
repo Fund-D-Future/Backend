@@ -1,0 +1,10 @@
+package com.funddfuture.fund_d_future.campaign;
+
+public enum CampaignFeature {
+    TUITION_FEES,
+    ACCOMMODATION_AND_LIVING_EXPENSES,
+    TEXTBOOKS_AND_STUDY_MATERIALS,
+    TECH_EQUIPMENT,
+    BOOTCAMPS_AND_CERTIFICATIONS,
+    STUDY_ABROAD_OR_EXCHANGE_PROGRAMMES
+}

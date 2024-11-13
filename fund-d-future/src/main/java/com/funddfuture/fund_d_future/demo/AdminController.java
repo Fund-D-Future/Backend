@@ -11,31 +11,31 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/admin")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('USER')")
 public class AdminController {
 
     @GetMapping
-    @PreAuthorize("hasAuthority('admin:read')")
+    @PreAuthorize("hasAuthority('user:read')")
     public String get() {
         return "GET:: admin controller";
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('admin:create')")
+    @PreAuthorize("hasAuthority('user:create')")
     @Hidden
     public String post() {
         return "POST:: admin controller";
     }
 
     @PutMapping
-    @PreAuthorize("hasAuthority('admin:update')")
+    @PreAuthorize("hasAuthority('user:update')")
     @Hidden
     public String put() {
         return "PUT:: admin controller";
     }
 
     @DeleteMapping
-    @PreAuthorize("hasAuthority('admin:delete')")
+    @PreAuthorize("hasAuthority('user:delete')")
     @Hidden
     public String delete() {
         return "DELETE:: admin controller";

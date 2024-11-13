@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -32,6 +34,7 @@ public class Token {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
+  @JsonBackReference
   public User user;
 
   // Token issued at time
@@ -46,5 +49,6 @@ public class Token {
   // Token revoked by
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "revoked_by_user_id")
+  @JsonBackReference
   public User revokedBy;
 }

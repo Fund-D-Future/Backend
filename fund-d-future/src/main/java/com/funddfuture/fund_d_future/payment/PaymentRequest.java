@@ -12,10 +12,15 @@ import java.util.UUID;
 @Setter
 @Builder
 public class PaymentRequest {
-
-    private UUID id;
     private Double amount;
     private String currency;
-    private Campaign campaign;
-    private User donor;
+    private String firstName;
+    private String lastName;
+    private String emailAddress;
+    private String phoneNumber;
+    private String transactionReference;
+    private String description;
+    private CardDetails card;
+    private String callbackUrl;
+    private String token;
 }

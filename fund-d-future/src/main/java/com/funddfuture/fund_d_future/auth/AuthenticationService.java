@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,20 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@(.+)$";
+  private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
 
   public AuthenticationResponse register(RegisterRequest request) {
+
+    if (!isValidEmail(request.getEmail())) {
+      throw new IllegalStateException("Invalid email format");
+    }
+    if (!isValidPassword(request.getPassword())) {
+      throw new IllegalStateException("Invalid password format");
+    }
+    if (repository.findByEmail(request.getEmail()).isPresent()) {
+      throw new IllegalStateException("Email is already taken");
+    }
     // check if password and confirmPassword are equal
     if (!request.getPassword().equals(request.getConfirmPassword())) {
       throw new IllegalStateException("Password and confirmPassword are not equal");
@@ -50,6 +63,14 @@ public class AuthenticationService {
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
+
+    if (!isValidEmail(request.getEmail())) {
+      throw new IllegalStateException("Invalid email format");
+    }
+    if (!isValidPassword(request.getPassword())) {
+      throw new IllegalStateException("Invalid password format");
+    }
+
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),
@@ -90,6 +111,14 @@ public class AuthenticationService {
     tokenRepository.saveAll(validUserTokens);
   }
 
+  private boolean isValidEmail(String email) {
+    return email != null && Pattern.matches(EMAIL_PATTERN, email);
+  }
+
+  private boolean isValidPassword(String password) {
+    return password != null && Pattern.matches(PASSWORD_PATTERN, password);
+  }
+
   public void refreshToken(
           HttpServletRequest request,
           HttpServletResponse response
@@ -117,4 +146,5 @@ public class AuthenticationService {
       }
     }
   }
+
 }

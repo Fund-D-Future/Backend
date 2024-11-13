@@ -23,6 +23,15 @@ public class DonationService {
         repository.save(donation);
     }
 
+    public void updateRaisedFunding(UUID campaignId) {
+        var campaignDonations = repository.findByCampaignId(campaignId);
+        var raisedFunding = campaignDonations.stream()
+                .mapToDouble(Donation::getAmount)
+                .sum();
+        var campaign = campaignDonations.get(0).getCampaign();
+        campaign.setRaisedFunding(raisedFunding);
+    }
+
     public List<Donation> findByCampaignId(UUID campaignId) {
         return repository.findByCampaignId(campaignId);
     }

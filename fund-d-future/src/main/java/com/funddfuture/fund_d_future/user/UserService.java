@@ -1,11 +1,18 @@
 package com.funddfuture.fund_d_future.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.funddfuture.fund_d_future.exception.*;
 
 import java.security.Principal;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -13,14 +20,27 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
-    public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
+    private final MailerService mailerService;
 
+    // get user details
+    @Transactional(readOnly = true)
+    public User getUserDetails(Principal connectedUser) {
+        return (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    }
+
+    public ResponseEntity<String> changePassword(ChangePasswordRequest request, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
         // check if the current password is correct
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new IllegalStateException("Wrong password");
         }
+
+        // Checks if old password and new password are same
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new IllegalStateException("New password cannot be the same as the old password");
+        }
+
         // check if the two new passwords are the same
         if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
             throw new IllegalStateException("Password are not the same");
@@ -31,5 +51,61 @@ public class UserService {
 
         // save the new password
         repository.save(user);
+        // return a json response to let user know password was changed successfully
+        return ResponseEntity.ok("Password changed successfully");
+    }
+
+    public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+        String email = forgotPasswordRequest.getEmail();
+        Optional<User> userOptional = repository.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
+            throw new NotFoundException("User not found");
+        }
+
+        User user = userOptional.get();
+        String resetToken = generateResetToken();
+        Date resetPasswordExpires = new Date(System.currentTimeMillis() + 3600000); // 1 hour
+
+        user.setResetPasswordToken(resetToken);
+        user.setResetPasswordExpires(resetPasswordExpires);
+        repository.save(user);
+
+        mailerService.sendPasswordResetEmail(email, resetToken);
+    }
+
+    public void resetPassword(String token, ResetPasswordRequest resetPasswordRequest) throws BadRequestException {
+        String email = resetPasswordRequest.getEmail();
+        String newPassword = resetPasswordRequest.getPassword();
+        String confirmPassword = resetPasswordRequest.getConfirmPassword();
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new BadRequestException("Passwords do not match");
+        }
+
+        Optional<User> userOptional = repository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new NotFoundException("User not found");
+        }
+
+        User user = userOptional.get();
+        if (!user.getResetPasswordToken().equals(token)) {
+            throw new UnauthorizedException("Invalid reset token");
+        }
+        if (user.getResetPasswordExpires().before(new Date())) {
+            throw new UnauthorizedException("Reset token expired");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetPasswordToken(null);
+        user.setResetPasswordExpires(null);
+        repository.save(user);
+    }
+
+    private String generateResetToken() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[32];
+        random.nextBytes(bytes);
+        return Arrays.toString(bytes);
     }
 }

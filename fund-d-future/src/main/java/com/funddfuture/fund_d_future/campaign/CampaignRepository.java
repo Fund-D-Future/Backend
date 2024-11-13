@@ -8,6 +8,13 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CampaignRepository extends JpaRepository<Campaign, UUID> {
-    @Query("SELECT c FROM Campaign c WHERE c.id = :ownerId")
-    List<Campaign> findByOwnerId(@Param("ownerId") UUID ownerId);
+
+    // include query param to avoid sql injection
+    @Query("SELECT c FROM Campaign c WHERE c.owner.id = :ownerId")
+    List<Campaign> findByOwnerId(UUID ownerId);
+
+    @Query("SELECT c FROM Campaign c WHERE c.feature = :feature")
+    List<Campaign> findByFeature(CampaignFeature feature);
+
+
 }

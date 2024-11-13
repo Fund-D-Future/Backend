@@ -14,10 +14,20 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
+    @PostMapping("/card")
+    public ResponseEntity<String> processCardPayment(@RequestBody PaymentRequest request) {
+        try {
+            String response = paymentService.processCardPayment(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
     // POST /payments: Process a new payment
     @PostMapping
     public ResponseEntity<?> process(@RequestBody PaymentRequest request) {
-        paymentService.process(request);
+        paymentService.processPayment(request);
         return ResponseEntity.accepted().build();
     }
 

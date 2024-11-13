@@ -15,10 +15,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import static com.funddfuture.fund_d_future.user.Permission.*;
 import static com.funddfuture.fund_d_future.user.Role.*;
 import static org.springframework.aot.generate.ValueCodeGenerator.withDefaults;
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -30,11 +27,16 @@ public class SecurityConfiguration {
     private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
             "/v2/api-docs",
             "/v3/api-docs",
-            "/api/v1/books/**",
-            "/api/v1/books",
+            "/api/v1/users",
             "/v3/api-docs/**",
             "/swagger-resources",
             "/swagger-resources/**",
+            "/api/v1/payments/**",
+            "/api/v1/donations/**",
+            "/api/v1/donations",
+            "/api/v1/rewards/**",
+            "/api/v1/rewards",
+            "/api/v1/payments",
             "/configuration/ui",
             "/configuration/security",
             "/swagger-ui/**",
@@ -53,11 +55,43 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/api/v1/funding/**").hasAnyRole(ADMIN.name(), FUNDER.name())
-                                .requestMatchers(GET, "/api/v1/funding/**").hasAnyAuthority(ADMIN_READ.name(), FUNDER_READ.name())
-                                .requestMatchers(POST, "/api/v1/funding/**").hasAnyAuthority(ADMIN_CREATE.name(), FUNDER_CREATE.name())
-                                .requestMatchers(PUT, "/api/v1/funding/**").hasAnyAuthority(ADMIN_UPDATE.name(), FUNDER_UPDATE.name())
-                                .requestMatchers(DELETE, "/api/v1/funding/**").hasAnyAuthority(ADMIN_DELETE.name(), FUNDER_DELETE.name())
+                                .requestMatchers(GET, "/api/v1/funding/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+                                .requestMatchers(POST, "/api/v1/funding/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+                                .requestMatchers(PUT, "/api/v1/funding/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+                                .requestMatchers(PATCH, "/api/v1/funding/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+                                .requestMatchers(DELETE, "/api/v1/funding/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+
+                                .requestMatchers(GET, "/api/v1/funding/**").hasAnyAuthority(ADMIN_READ.name(), FUNDER_READ.name(), USER_READ.name())
+                                .requestMatchers(POST, "/api/v1/funding/**").hasAnyAuthority(ADMIN_CREATE.name(), FUNDER_CREATE.name(), USER_CREATE.name())
+                                .requestMatchers(PUT, "/api/v1/funding/**").hasAnyAuthority(ADMIN_UPDATE.name(), FUNDER_UPDATE.name(), USER_UPDATE.name())
+                                .requestMatchers(DELETE, "/api/v1/funding/**").hasAnyAuthority(ADMIN_DELETE.name(), FUNDER_DELETE.name(), USER_DELETE.name())
+                                .requestMatchers(PATCH, "/api/v1/funding/**").hasAnyAuthority(ADMIN_UPDATE.name(), FUNDER_UPDATE.name(), USER_UPDATE.name())
+
+
+                                .requestMatchers(GET, "/api/v1/campaigns/**").hasAnyRole(USER.name(), FUNDER.name(), ADMIN.name())
+                                .requestMatchers(POST, "/api/v1/campaigns/**").hasAnyRole(USER.name(), FUNDER.name(), ADMIN.name())
+                                .requestMatchers(PUT, "/api/v1/campaigns/**").hasAnyRole(USER.name(), FUNDER.name(), ADMIN.name())
+                                .requestMatchers(PATCH, "/api/v1/campaigns/**").hasAnyRole(USER.name(), FUNDER.name(), ADMIN.name())
+                                .requestMatchers(DELETE, "/api/v1/campaigns/**").hasAnyRole(USER.name(), FUNDER.name(), ADMIN.name())
+
+                                .requestMatchers(GET, "/api/v1/campaigns/**").hasAnyAuthority(ADMIN_READ.name(), FUNDER_READ.name(), USER_READ.name())
+                                .requestMatchers(POST, "/api/v1/campaigns/**").hasAnyAuthority(ADMIN_CREATE.name(), FUNDER_CREATE.name(), USER_CREATE.name())
+                                .requestMatchers(PUT, "/api/v1/campaigns/**").hasAnyAuthority(ADMIN_UPDATE.name(), FUNDER_UPDATE.name(), USER_UPDATE.name())
+                                .requestMatchers(DELETE, "/api/v1/campaigns/**").hasAnyAuthority(ADMIN_DELETE.name(), FUNDER_DELETE.name(), USER_DELETE.name())
+                                .requestMatchers(PATCH, "/api/v1/campaigns/**").hasAnyAuthority(ADMIN_UPDATE.name(), FUNDER_UPDATE.name(), USER_UPDATE.name())
+
+                                .requestMatchers(GET, "/api/v1/users/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+                                .requestMatchers(DELETE, "/api/v1/users/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+                                .requestMatchers(PATCH, "/api/v1/users/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+                                .requestMatchers(POST, "/api/v1/users/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+                                .requestMatchers(PUT, "/api/v1/users/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
+
+                                .requestMatchers(DELETE, "/api/v1/users/**").hasAnyAuthority(ADMIN_DELETE.name(), FUNDER_DELETE.name(), USER_DELETE.name())
+                                .requestMatchers(GET, "/api/v1/users/**").hasAnyAuthority(ADMIN_READ.name(), FUNDER_READ.name(), USER_READ.name())
+                                .requestMatchers(POST, "/api/v1/users/**").hasAnyAuthority(ADMIN_CREATE.name(), FUNDER_CREATE.name(), USER_CREATE.name())
+                                .requestMatchers(PUT, "/api/v1/users/**").hasAnyAuthority(ADMIN_UPDATE.name(), FUNDER_UPDATE.name(), USER_UPDATE.name())
+                                .requestMatchers(PATCH, "/api/v1/users/**").hasAnyAuthority(ADMIN_UPDATE.name(), FUNDER_UPDATE.name(), USER_UPDATE.name())
+
 //                                .anyRequest()
 //                                .authenticated()
                 )
