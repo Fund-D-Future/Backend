@@ -26,8 +26,9 @@ public class MailerService {
 
     public void sendPasswordResetEmail(String email, String resetToken) {
         String subject = "Password Reset Request";
-        String content = "To reset your password, click the link below:\n" + resetPasswordUrl + resetToken;
-        System.out.printf("Helllooo DAMMY %s, %s, %s%n", email, mailSender, emailFrom);        SimpleMailMessage message = new SimpleMailMessage();
+        String content = "To reset your password, click:\n" + resetPasswordUrl + resetToken;
+        System.out.printf("Helllooo DAMMY %s, %s, %s%n", email, mailSender, emailFrom);
+        SimpleMailMessage message = new SimpleMailMessage();
 
             message.setFrom(emailFrom);
             message.setTo(email);

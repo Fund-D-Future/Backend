@@ -1,6 +1,7 @@
 package com.funddfuture.fund_d_future.payment;
 
 import com.funddfuture.fund_d_future.campaign.Campaign;
+import com.funddfuture.fund_d_future.campaign.Currency;
 import com.funddfuture.fund_d_future.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,7 @@ public class Payment {
     private Double amount;
 
     @Column(nullable = false)
-    private String currency;
+    private Currency currency;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campaign_id", nullable = false)

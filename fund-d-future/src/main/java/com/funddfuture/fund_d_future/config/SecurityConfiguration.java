@@ -43,6 +43,8 @@ public class SecurityConfiguration {
             "/webjars/**",
             "/swagger-ui.html",
             "/oauth2/google",
+            "/api/v1/users/reset-password",
+            "/api/v1/users/forgot-password",
             "/oauth2/google/callback",};
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;

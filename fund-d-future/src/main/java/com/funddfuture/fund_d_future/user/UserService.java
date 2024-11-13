@@ -7,12 +7,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.funddfuture.fund_d_future.exception.*;
-
 import java.security.Principal;
-import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -66,12 +64,12 @@ public class UserService {
         User user = userOptional.get();
         String resetToken = generateResetToken();
         Date resetPasswordExpires = new Date(System.currentTimeMillis() + 3600000); // 1 hour
+        mailerService.sendPasswordResetEmail(email, resetToken);
 
         user.setResetPasswordToken(resetToken);
         user.setResetPasswordExpires(resetPasswordExpires);
         repository.save(user);
 
-        mailerService.sendPasswordResetEmail(email, resetToken);
     }
 
     public void resetPassword(String token, ResetPasswordRequest resetPasswordRequest) throws BadRequestException {
@@ -103,9 +101,7 @@ public class UserService {
     }
 
     private String generateResetToken() {
-        SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[32];
-        random.nextBytes(bytes);
-        return Arrays.toString(bytes);
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString().substring(0, 6);
     }
 }

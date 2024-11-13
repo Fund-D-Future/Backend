@@ -50,8 +50,8 @@ public class UserController {
     public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestBody ResetPasswordRequest resetPasswordRequest) {
         try {
             service.resetPassword(token, resetPasswordRequest);
-        } catch (BadRequestException | NotFoundException | UnauthorizedException e) {
-            throw e;
+        } catch (NotFoundException e) {
+            throw new NotFoundException(e.getMessage());
         }
         return ResponseEntity.ok().body("Password reset successful.");
     }
