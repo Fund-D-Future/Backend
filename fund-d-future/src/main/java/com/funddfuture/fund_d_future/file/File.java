@@ -1,5 +1,8 @@
 package com.funddfuture.fund_d_future.file;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.funddfuture.fund_d_future.campaign.Campaign;
+import com.funddfuture.fund_d_future.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +29,10 @@ public class File {
 
     private String url;
     private String key;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
+    private Campaign campaign;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

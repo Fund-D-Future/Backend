@@ -20,7 +20,7 @@ public class FileService {
     private FileRepository fileRepository;
 
     @Autowired
-    private static AmazonS3 amazonS3;
+    AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -37,7 +37,7 @@ public class FileService {
     }
 
     public void deletePublicFile(UUID fileId) {
-        File file = fileRepository.findById(String.valueOf(fileId)).orElse(null);
+        File file = fileRepository.findById(UUID.fromString(String.valueOf(fileId))).orElse(null);
         if (file != null) {
             deleteFromS3(file.getKey());
             fileRepository.delete(file);

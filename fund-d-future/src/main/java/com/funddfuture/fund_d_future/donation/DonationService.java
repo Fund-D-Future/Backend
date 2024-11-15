@@ -1,5 +1,6 @@
 package com.funddfuture.fund_d_future.donation;
 
+import com.funddfuture.fund_d_future.campaign.CampaignRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
 public class DonationService {
 
     private final DonationRepository repository;
+    private final CampaignRepository campaignRepository;
 
     public void save(DonationRequest request) {
         var donation = Donation.builder()
@@ -23,13 +25,15 @@ public class DonationService {
         repository.save(donation);
     }
 
-    public void updateRaisedFunding(UUID campaignId) {
+    public void updateRaisedFunding(UUID campaignId, Double amount) {
         var campaignDonations = repository.findByCampaignId(campaignId);
         var raisedFunding = campaignDonations.stream()
                 .mapToDouble(Donation::getAmount)
                 .sum();
+        System.out.println("Raised funding: " + raisedFunding);
         var campaign = campaignDonations.get(0).getCampaign();
         campaign.setRaisedFunding(raisedFunding);
+        campaignRepository.save(campaign);
     }
 
     public List<Donation> findByCampaignId(UUID campaignId) {

@@ -33,12 +33,14 @@ public class Payment {
     @Column(nullable = false)
     private Currency currency;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "campaign_id", nullable = false)
+    @Column(nullable = false)
+    private String transactionReference;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false)
     private Campaign campaign;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "donor_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User donor;
 
     @CreatedDate

@@ -20,9 +20,6 @@ public class PaymentRequest {
     private String lastName;
     private String emailAddress;
     private String phoneNumber;
-    private String transactionReference;
     private String description;
     private CardDetails card;
-    private String callbackUrl;
-    private String token;
 }

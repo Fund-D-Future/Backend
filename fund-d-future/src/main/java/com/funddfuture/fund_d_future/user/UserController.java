@@ -55,4 +55,18 @@ public class UserController {
         }
         return ResponseEntity.ok().body("Password reset successful.");
     }
+
+    @PostMapping("/create-transaction-pin")
+    public ResponseEntity<String> createTransactionPin(@RequestBody String pin, Principal connectedUser) {
+        service.createTransactionPin(pin, connectedUser);
+        return ResponseEntity.ok("Transaction pin created successfully");
+    }
+
+    @PatchMapping("/change-transaction-pin")
+    public ResponseEntity<String> changeTransactionPin(@RequestBody ChangePinRequest request, Principal connectedUser) {
+        service.changeTransactionPin(request.getOldPin(), request.getNewPin(), connectedUser);
+        return ResponseEntity.ok("Transaction pin changed successfully");
+    }
+
+
 }

@@ -3,7 +3,9 @@ package com.funddfuture.fund_d_future.campaign;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.funddfuture.fund_d_future.file.File;
 import com.funddfuture.fund_d_future.user.User;
+import com.funddfuture.fund_d_future.wallet.Wallet;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -62,6 +65,13 @@ public class Campaign {
     @JsonBackReference
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "campaign")
+    @JsonManagedReference
+    private List<File> files;
+
+    @OneToOne(mappedBy = "campaign", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Wallet wallet;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)

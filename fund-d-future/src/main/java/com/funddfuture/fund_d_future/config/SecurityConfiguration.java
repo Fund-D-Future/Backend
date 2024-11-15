@@ -45,7 +45,12 @@ public class SecurityConfiguration {
             "/oauth2/google",
             "/api/v1/users/reset-password",
             "/api/v1/users/forgot-password",
-            "/oauth2/google/callback",};
+            "/oauth2/google/callback",
+            "/files/**",
+            "/api/v1/campaigns/{id}/upload",
+            "/api/v1/campaigns/{campaignId}/delete-file/{fileId}",
+
+    };
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;

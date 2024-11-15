@@ -14,22 +14,26 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/card")
-    public ResponseEntity<String> processCardPayment(@RequestBody PaymentRequest request) {
+    @PostMapping("/card/{campaignId}/initiate")
+    public ResponseEntity<String> initiateCardPayment(@PathVariable UUID campaignId, @RequestBody PaymentRequest request) {
         try {
-            String response = paymentService.processCardPayment(request);
+            String response = paymentService.processCardPayment(request, campaignId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
 
-    // POST /payments: Process a new payment
-    @PostMapping
-    public ResponseEntity<?> process(@RequestBody PaymentRequest request) {
-        paymentService.processPayment(request);
-        return ResponseEntity.accepted().build();
+    @PostMapping("/card/{campaignId}/complete")
+    public ResponseEntity<String> completeCardPayment(@PathVariable UUID campaignId, @RequestBody CompletePaymentRequest request) {
+        try {
+            String response = paymentService.completeCardPayment(request.getPaymentRequest(), request.getOtp(), campaignId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
+
 
     // GET /payments/donor/{donorId}: Get payments made by a specific donor
     @GetMapping("/donor/{donorId}")

@@ -104,4 +104,19 @@ public class UserService {
         UUID uuid = UUID.randomUUID();
         return uuid.toString().substring(0, 6);
     }
+
+    public void createTransactionPin(String pin, Principal connectedUser) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        user.setTransactionPin(passwordEncoder.encode(pin));
+        repository.save(user);
+    }
+
+    public void changeTransactionPin(String oldPin, String newPin, Principal connectedUser) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        if (!passwordEncoder.matches(oldPin, user.getTransactionPin())) {
+            throw new IllegalStateException("Incorrect old transaction pin");
+        }
+        user.setTransactionPin(passwordEncoder.encode(newPin));
+        repository.save(user);
+    }
 }

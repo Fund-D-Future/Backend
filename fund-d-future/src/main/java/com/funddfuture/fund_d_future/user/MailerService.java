@@ -37,4 +37,15 @@ public class MailerService {
 
         mailSender.send(message);
     }
+
+    public void sendOtpEmail(String email, String otp) {
+        String subject = "Your OTP Code";
+        String content = "Your OTP code is: " + otp;
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(emailFrom);
+        message.setTo(email);
+        message.setSubject(subject);
+        message.setText(content);
+        mailSender.send(message);
+    }
 }

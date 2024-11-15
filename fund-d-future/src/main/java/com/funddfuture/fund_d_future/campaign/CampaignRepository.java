@@ -16,5 +16,4 @@ public interface CampaignRepository extends JpaRepository<Campaign, UUID> {
     @Query("SELECT c FROM Campaign c WHERE c.feature = :feature")
     List<Campaign> findByFeature(CampaignFeature feature);
 
-
 }

@@ -1,16 +1,27 @@
 package com.funddfuture.fund_d_future.campaign;
 
+import com.funddfuture.fund_d_future.file.File;
+import com.funddfuture.fund_d_future.file.FileRepository;
+import com.funddfuture.fund_d_future.file.FileService;
 import com.funddfuture.fund_d_future.user.User;
 import com.funddfuture.fund_d_future.user.UserRepository;
+import com.funddfuture.fund_d_future.wallet.Wallet;
+import com.funddfuture.fund_d_future.wallet.WalletRepository;
+import com.funddfuture.fund_d_future.wallet.WithdrawalRequest;
 import lombok.RequiredArgsConstructor;
+import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ai.openai.OpenAiEmbeddingModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -22,14 +33,23 @@ import static org.springframework.ai.vectorstore.SimpleVectorStore.EmbeddingMath
 public class CampaignService {
 
     private final UserRepository userRepository;
+    private final FileRepository fileRepository;
+    private final WalletRepository walletRepository;
     private static final Number SIMILARITY_THRESHOLD = 0.4;
     private final CampaignRepository repository;
     private final OpenAiEmbeddingModel aiClient;
+    private final FileService fileService;
+    private final PasswordEncoder passwordEncoder;
+    private final OkHttpClient client = new OkHttpClient().newBuilder().build();
+
 
     @Value("${spring.ai.openai.api-key:#{null}}")
     private String openAiApiKey;
 
     private final boolean enableAiSearch = openAiApiKey != null && !openAiApiKey.isBlank();
+
+    @Value("${encoded-payaza-api-key}")
+    private String encodedPayazaApiKey;
 
     private User getAuthenticatedUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -57,6 +77,14 @@ public class CampaignService {
                 .embedding(embeddedVector) // Set the embedded vector
                 .build();
         repository.save(campaign);
+
+        // Create and save wallet for the campaign
+        var wallet = Wallet.builder()
+                .balance(0.0)
+                .campaign(campaign)
+                .build();
+        walletRepository.save(wallet);
+
         return campaign;
     }
     public void update(UUID id, CampaignRequest request) {
@@ -145,6 +173,120 @@ public class CampaignService {
 
     public List<Campaign> findByFeature(CampaignFeature feature) {
         return repository.findByFeature(feature);
+    }
+
+    public List<File> uploadFiles(UUID campaignId, List<MultipartFile> files) throws IOException {
+        Campaign campaign = repository.findById(campaignId)
+                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+        List<File> uploadedFiles = new ArrayList<>();
+        for (MultipartFile file : files) {
+            File uploadedFile = fileService.uploadPublicFile(file);
+            uploadedFiles.add(uploadedFile);
+        }
+
+        campaign.getFiles().addAll(uploadedFiles);
+        repository.save(campaign);
+
+        return uploadedFiles;
+    }
+
+    public void deleteFile(UUID campaignId, UUID fileId) {
+        Campaign campaign = repository.findById(campaignId)
+                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+        File file = fileRepository.findById(fileId)
+                .orElseThrow(() -> new RuntimeException("File not found"));
+
+        if (!campaign.getFiles().contains(file)) {
+            throw new RuntimeException("File does not belong to the campaign");
+        }
+
+        fileService.deletePublicFile(fileId);
+        campaign.getFiles().remove(file);
+        repository.save(campaign);
+    }
+
+    public ResponseEntity<Object> withdrawFunds(UUID campaignId, WithdrawalRequest request, UUID userId) throws IOException {
+        Campaign campaign = repository.findById(campaignId)
+                .orElseThrow(() -> new RuntimeException("Campaign not found"));
+
+        if (!campaign.getOwner().getId().equals(userId)) {
+            throw new RuntimeException("Unauthorized access");
+        }
+
+        Wallet wallet = walletRepository.findByCampaignId(campaignId)
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+
+        if (wallet.getBalance() < request.getAmount()) {
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        if (!passwordEncoder.matches(request.getTransactionPin(), getAuthenticatedUser().getTransactionPin())) {
+            throw new RuntimeException("Invalid transaction pin");
+        }
+
+        // Deduct the amount from the wallet balance
+        wallet.setBalance(wallet.getBalance() - request.getAmount());
+        walletRepository.save(wallet);
+
+        // Prepare the JSON payload
+        String jsonPayload = String.format(
+                "{" +
+                        "\"transaction_type\": \"nuban\"," +
+                        "\"service_payload\": {" +
+                        "\"payout_amount\": %.2f," +
+                        "\"transaction_pin\": \"%s\"," +
+                        "\"account_reference\": \"%s\"," +
+                        "\"currency\": \"NGN\"," +
+                        "\"country\": \"NGA\"," +
+                        "\"payout_beneficiaries\": [" +
+                        "{" +
+                        "\"credit_amount\": %.2f," +
+                        "\"account_number\": \"%s\"," +
+                        "\"account_name\": \"%s\"," +
+                        "\"bank_code\": \"%s\"," +
+                        "\"narration\": \"Campaign Withdrawal\"," +
+                        "\"transaction_reference\": \"%s\"," +
+                        "\"sender\": {" +
+                        "\"sender_name\": \"Fund D Future\"," +
+                        "\"sender_id\": \"\"," +
+                        "\"sender_phone_number\": \"01234595\"," +
+                        "\"sender_address\": \"123, Ace Street\"" +
+                        "}" +
+                        "}" +
+                        "]" +
+                        "}" +
+                        "}",
+                request.getAmount(),
+                request.getTransactionPin(),
+                campaignId,
+                request.getAmount(),
+                request.getAccountNumber(),
+                request.getAccountName(),
+                request.getBankCode(),
+                UUID.randomUUID()
+        );
+
+        // Set the JSON payload as the request body
+        RequestBody body = RequestBody.create(jsonPayload, MediaType.parse("application/json"));
+
+        // Build the HTTP request
+        Request httpRequest = new Request.Builder()
+                .url("https://api.payaza.africa/live/payout-receptor/payout")
+                .post(body)
+                .addHeader("Authorization", "Payaza " + encodedPayazaApiKey)
+                .addHeader("X-tenantID", "test")
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        // Execute the request and handle the response
+        try (Response response = client.newCall(httpRequest).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            else {
+                return ResponseEntity.noContent().build();
+            }
+        }
     }
 
 

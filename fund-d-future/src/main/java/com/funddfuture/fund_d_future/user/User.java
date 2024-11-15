@@ -75,6 +75,7 @@ public class User implements UserDetails {
 
   private String resetPasswordToken;
   private Date resetPasswordExpires;
+  private String transactionPin;
 
   @Override
   @JsonIgnore
