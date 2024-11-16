@@ -47,8 +47,6 @@ public class SecurityConfiguration {
             "/api/v1/users/forgot-password",
             "/oauth2/google/callback",
             "/files/**",
-            "/api/v1/campaigns/{id}/upload",
-            "/api/v1/campaigns/{campaignId}/delete-file/{fileId}",
 
     };
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -62,6 +60,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
+                                .requestMatchers(GET, "/api/v1/campaigns", "/api/v1/campaigns/{id}", "/api/v1/campaigns/owner/{ownerId}", "/api/v1/campaigns/vector-search", "/api/v1/campaigns/feature").permitAll()
                                 .requestMatchers(GET, "/api/v1/funding/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
                                 .requestMatchers(POST, "/api/v1/funding/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())
                                 .requestMatchers(PUT, "/api/v1/funding/**").hasAnyRole(ADMIN.name(), FUNDER.name(), USER.name())

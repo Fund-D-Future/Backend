@@ -70,7 +70,6 @@ public class User implements UserDetails {
   private List<Token> tokens;
 
   @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
-  @JsonManagedReference
   private List<Campaign> campaigns;
 
   private String resetPasswordToken;

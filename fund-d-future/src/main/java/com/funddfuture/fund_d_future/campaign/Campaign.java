@@ -2,7 +2,10 @@ package com.funddfuture.fund_d_future.campaign;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.funddfuture.fund_d_future.campaign.CampaignFeature;
+import com.funddfuture.fund_d_future.campaign.Currency;
 import com.funddfuture.fund_d_future.file.File;
 import com.funddfuture.fund_d_future.user.User;
 import com.funddfuture.fund_d_future.wallet.Wallet;
@@ -62,7 +65,7 @@ public class Campaign {
     private Instant endDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonBackReference
+    @JsonIgnoreProperties({"campaigns", "tokens"})
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
@@ -71,6 +74,7 @@ public class Campaign {
     private List<File> files;
 
     @OneToOne(mappedBy = "campaign", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private Wallet wallet;
 
     @CreatedDate

@@ -20,6 +20,7 @@ public class WalletService {
 
         Wallet wallet = Wallet.builder()
                 .balance(0.0)
+                .currency(campaign.getCurrency())
                 .campaign(campaign)
                 .build();
 

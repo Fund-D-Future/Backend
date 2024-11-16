@@ -7,6 +7,7 @@ import com.funddfuture.fund_d_future.user.User;
 import com.funddfuture.fund_d_future.user.UserRepository;
 import com.funddfuture.fund_d_future.wallet.Wallet;
 import com.funddfuture.fund_d_future.wallet.WalletRepository;
+import com.funddfuture.fund_d_future.wallet.WalletService;
 import com.funddfuture.fund_d_future.wallet.WithdrawalRequest;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
@@ -39,6 +40,7 @@ public class CampaignService {
     private final CampaignRepository repository;
     private final OpenAiEmbeddingModel aiClient;
     private final FileService fileService;
+    private final WalletService walletService;
     private final PasswordEncoder passwordEncoder;
     private final OkHttpClient client = new OkHttpClient().newBuilder().build();
 
@@ -79,11 +81,7 @@ public class CampaignService {
         repository.save(campaign);
 
         // Create and save wallet for the campaign
-        var wallet = Wallet.builder()
-                .balance(0.0)
-                .campaign(campaign)
-                .build();
-        walletRepository.save(wallet);
+        walletService.createWalletForCampaign(campaign.getId());
 
         return campaign;
     }

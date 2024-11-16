@@ -1,6 +1,8 @@
 package com.funddfuture.fund_d_future.wallet;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.funddfuture.fund_d_future.campaign.Campaign;
+import com.funddfuture.fund_d_future.campaign.Currency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +27,12 @@ public class Wallet {
     @Column(nullable = false, columnDefinition = "DOUBLE PRECISION DEFAULT 0")
     private Double balance;
 
+    @Column(nullable = false)
+    private Currency currency;
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
+    @JsonBackReference
     private Campaign campaign;
 
 

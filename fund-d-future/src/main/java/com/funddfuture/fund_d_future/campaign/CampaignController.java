@@ -42,6 +42,7 @@ public class CampaignController {
         Wallet wallet = walletService.getWalletByCampaignId(id, userId);
         return ResponseEntity.ok(wallet);
     }
+
     @PostMapping
     public ResponseEntity<?> save(@RequestBody CampaignRequest request) {
         campaignService.save(request);

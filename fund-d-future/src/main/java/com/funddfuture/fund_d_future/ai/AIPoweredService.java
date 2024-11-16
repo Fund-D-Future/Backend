@@ -13,15 +13,15 @@ public class AIPoweredService {
     private final AIPoweredRepository repository;
 
     public void analyzeCampaign(CampaignAnalysisRequest request) {
-        // Implement sentiment analysis logic here
+        // Implement sentiment analysis logic
     }
 
     public List<Campaign> recommendCampaigns(CampaignRecommendationRequest request) {
-        // Implement recommendation logic here
+        // Implement recommendation logic
         return repository.findRecommendedCampaigns(request.getUserId());
     }
 
     public void detectFraud(FraudDetectionRequest request) {
-        // Implement fraud detection logic here
+        // Implement fraud detection logic
     }
 }
