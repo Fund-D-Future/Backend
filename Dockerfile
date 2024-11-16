@@ -16,7 +16,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the jar file from the previous stage
-COPY -- from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 # Expose the application port (default is 8080)
 EXPOSE 8080
