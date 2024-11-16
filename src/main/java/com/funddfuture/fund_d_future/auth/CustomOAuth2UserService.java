@@ -8,6 +8,7 @@ import com.funddfuture.fund_d_future.user.Role;
 import com.funddfuture.fund_d_future.user.User;
 import com.funddfuture.fund_d_future.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    @Autowired
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
 
