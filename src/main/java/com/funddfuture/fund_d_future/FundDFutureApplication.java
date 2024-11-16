@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@ComponentScan(basePackages = {"com.funddfuture.fund_d_future"})
 @RestController
 public class FundDFutureApplication {
 
