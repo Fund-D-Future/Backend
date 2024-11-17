@@ -26,6 +26,30 @@ public class UserService {
         return (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
     }
 
+    // src/main/java/com/funddfuture/fund_d_future/user/UserService.java
+    @Transactional
+    public User updateUser( Principal connectedUser, UpdateUserRequest request) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        user.setFirstname(request.getFirstname());
+        user.setLastname(request.getLastname());
+        user.setBio(request.getBio());
+        user.setInstitution(request.getInstitution());
+        user.setDegreeProgram(request.getDegreeProgram());
+        user.setCourseOfStudy(request.getCourseOfStudy());
+        user.setYearOfStudy(request.getYearOfStudy());
+        user.setGrade(request.getGrade());
+        user.setProof(request.getProof());
+        user.setShortTermGoals(request.getShortTermGoals());
+        user.setLongTermGoals(request.getLongTermGoals());
+        user.setExtraCurricularActivities(request.getExtraCurricularActivities());
+        user.setVolunteerWork(request.getVolunteerWork());
+        user.setResidentCountry(request.getResidentCountry());
+        user.setRole(request.getRole());
+
+        return repository.save(user);
+    }
+
     public ResponseEntity<String> changePassword(ChangePasswordRequest request, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
@@ -37,11 +61,6 @@ public class UserService {
         // Checks if old password and new password are same
         if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
             throw new IllegalStateException("New password cannot be the same as the old password");
-        }
-
-        // check if the two new passwords are the same
-        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
-            throw new IllegalStateException("Password are not the same");
         }
 
         // update the password
@@ -75,11 +94,6 @@ public class UserService {
     public void resetPassword(String token, ResetPasswordRequest resetPasswordRequest) throws BadRequestException {
         String email = resetPasswordRequest.getEmail();
         String newPassword = resetPasswordRequest.getPassword();
-        String confirmPassword = resetPasswordRequest.getConfirmPassword();
-
-        if (!newPassword.equals(confirmPassword)) {
-            throw new BadRequestException("Passwords do not match");
-        }
 
         Optional<User> userOptional = repository.findByEmail(email);
         if (userOptional.isEmpty()) {

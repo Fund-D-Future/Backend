@@ -63,7 +63,12 @@ public class User implements UserDetails {
   private CountryList residentCountry;
 
   @Enumerated(EnumType.STRING)
-  private Role role;
+  @PrePersist
+  protected void onCreate() {
+    if (role == null) {
+      role = Role.USER;
+    }
+  }  private Role role;
 
   @OneToMany(mappedBy = "user")
   @JsonIgnore
