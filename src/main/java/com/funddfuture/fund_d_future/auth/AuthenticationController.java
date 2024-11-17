@@ -22,13 +22,21 @@ public class AuthenticationController {
   public ResponseEntity<AuthenticationResponse> register(
       @RequestBody RegisterRequest request
   ) {
-    return ResponseEntity.ok(service.register(request));
+    try {
+      return ResponseEntity.ok(service.register(request));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().build();
+    }
   }
   @PostMapping("/authenticate")
   public ResponseEntity<AuthenticationResponse> authenticate(
       @RequestBody AuthenticationRequest request
   ) {
-    return ResponseEntity.ok(service.authenticate(request));
+    try {
+      return ResponseEntity.ok(service.authenticate(request));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().build();
+    }
   }
 
   @PostMapping("/refresh-token")
