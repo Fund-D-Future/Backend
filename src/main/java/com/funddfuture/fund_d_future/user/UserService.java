@@ -28,7 +28,7 @@ public class UserService {
 
     // src/main/java/com/funddfuture/fund_d_future/user/UserService.java
     @Transactional
-    public User updateUser( Principal connectedUser, UpdateUserRequest request) {
+    public ResponseEntity<User> updateUser( Principal connectedUser, UpdateUserRequest request) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
         user.setFirstname(request.getFirstname());
