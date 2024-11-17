@@ -16,8 +16,8 @@ public class UserController {
 
     // get user details
     @GetMapping("/user-details")
-    public ResponseEntity<User> getUserDetails(Principal connectedUser) {
-        return ResponseEntity.ok(service.getUserDetails(connectedUser).getBody());
+    public ResponseEntity<ResponseEntity<User>> getUserDetails(Principal connectedUser) {
+        return ResponseEntity.ok(service.getUserDetails(connectedUser));
     }
 
     // src/main/java/com/funddfuture/fund_d_future/user/UserController.java

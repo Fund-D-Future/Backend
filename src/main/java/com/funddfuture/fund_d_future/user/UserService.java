@@ -23,7 +23,9 @@ public class UserService {
     // get user details
     @Transactional(readOnly = true)
     public ResponseEntity<User> getUserDetails(Principal connectedUser) {
-        return (ResponseEntity<User>) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        // get the connected user from the Principal object
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        return ResponseEntity.ok(user);
     }
 
     // src/main/java/com/funddfuture/fund_d_future/user/UserService.java
