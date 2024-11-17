@@ -63,6 +63,7 @@ public class User implements UserDetails {
   private CountryList residentCountry;
 
   @Enumerated(EnumType.STRING)
+  @Column(nullable = false, columnDefinition = "varchar(255) default 'USER'")
   private Role role;
 
   @OneToMany(mappedBy = "user")
