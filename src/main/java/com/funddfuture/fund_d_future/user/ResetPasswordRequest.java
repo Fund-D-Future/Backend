@@ -12,7 +12,7 @@ public class ResetPasswordRequest {
     private String email;
 
 
-    public ResetPasswordRequest(String password, String confirmPassword, String email) {
+    public ResetPasswordRequest(String password, String email) {
         this.password = password;
         this.email = email;
     }
