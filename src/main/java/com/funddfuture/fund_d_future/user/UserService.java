@@ -22,8 +22,8 @@ public class UserService {
 
     // get user details
     @Transactional(readOnly = true)
-    public User getUserDetails(Principal connectedUser) {
-        return (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    public ResponseEntity<User> getUserDetails(Principal connectedUser) {
+        return (ResponseEntity<User>) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
     }
 
     // src/main/java/com/funddfuture/fund_d_future/user/UserService.java
@@ -47,10 +47,10 @@ public class UserService {
         user.setResidentCountry(request.getResidentCountry());
         user.setRole(request.getRole());
 
-        return repository.save(user);
+        return ResponseEntity.ok(repository.save(user));
     }
 
-    public ResponseEntity<String> changePassword(ChangePasswordRequest request, Principal connectedUser) {
+    public ResponseEntity<User> changePassword(ChangePasswordRequest request, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
         // check if the current password is correct
@@ -67,12 +67,11 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         // save the new password
-        repository.save(user);
         // return a json response to let user know password was changed successfully
-        return ResponseEntity.ok("Password changed successfully");
+        return ResponseEntity.ok(repository.save(user));
     }
 
-    public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+    public ResponseEntity<String> forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
         String email = forgotPasswordRequest.getEmail();
         Optional<User> userOptional = repository.findByEmail(email);
 
@@ -88,10 +87,11 @@ public class UserService {
         user.setResetPasswordToken(resetToken);
         user.setResetPasswordExpires(resetPasswordExpires);
         repository.save(user);
+        return ResponseEntity.ok("Reset Token successfully sent");
 
     }
 
-    public void resetPassword(String token, ResetPasswordRequest resetPasswordRequest) throws BadRequestException {
+    public ResponseEntity<String> resetPassword(String token, ResetPasswordRequest resetPasswordRequest) throws BadRequestException {
         String email = resetPasswordRequest.getEmail();
         String newPassword = resetPasswordRequest.getPassword();
 
@@ -112,6 +112,8 @@ public class UserService {
         user.setResetPasswordToken(null);
         user.setResetPasswordExpires(null);
         repository.save(user);
+        return ResponseEntity.ok("Reset Password successful");
+
     }
 
     private String generateResetToken() {
@@ -119,18 +121,20 @@ public class UserService {
         return uuid.toString().substring(0, 6);
     }
 
-    public void createTransactionPin(String pin, Principal connectedUser) {
+    public ResponseEntity<String> createTransactionPin(String pin, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         user.setTransactionPin(passwordEncoder.encode(pin));
         repository.save(user);
+        return ResponseEntity.ok("Transaction pin created successfully");
     }
 
-    public void changeTransactionPin(String oldPin, String newPin, Principal connectedUser) {
+    public ResponseEntity<String> changeTransactionPin(String oldPin, String newPin, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         if (!passwordEncoder.matches(oldPin, user.getTransactionPin())) {
             throw new IllegalStateException("Incorrect old transaction pin");
         }
         user.setTransactionPin(passwordEncoder.encode(newPin));
         repository.save(user);
+        return ResponseEntity.ok("Transaction pin changed successfully");
     }
 }

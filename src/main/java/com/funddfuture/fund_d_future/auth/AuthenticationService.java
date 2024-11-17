@@ -4,6 +4,7 @@ import com.funddfuture.fund_d_future.config.JwtService;
 import com.funddfuture.fund_d_future.token.Token;
 import com.funddfuture.fund_d_future.token.TokenRepository;
 import com.funddfuture.fund_d_future.token.TokenType;
+import com.funddfuture.fund_d_future.user.Role;
 import com.funddfuture.fund_d_future.user.User;
 import com.funddfuture.fund_d_future.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +47,7 @@ public class AuthenticationService {
         .firstname(request.getFirstname())
         .lastname(request.getLastname())
         .email(request.getEmail())
+            .role(Role.USER)
         .password(passwordEncoder.encode(request.getPassword()))
         .build();
     var savedUser =  repository.save(user);

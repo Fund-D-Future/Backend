@@ -17,8 +17,7 @@ public class UserController {
     // get user details
     @GetMapping("/user-details")
     public ResponseEntity<User> getUserDetails(Principal connectedUser) {
-        User userDetails = service.getUserDetails(connectedUser);
-        return ResponseEntity.ok(userDetails);
+        return ResponseEntity.ok(service.getUserDetails(connectedUser).getBody());
     }
 
     // src/main/java/com/funddfuture/fund_d_future/user/UserController.java
@@ -27,26 +26,20 @@ public class UserController {
             Principal connectedUser,
             @RequestBody UpdateUserRequest request
     ) {
-        User updatedUser = service.updateUser(connectedUser, request);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(service.updateUser(connectedUser, request).getBody());
     }
 
     @PatchMapping("/change-password")
-    public ResponseEntity<ResponseEntity<String>> changePassword(
+    public ResponseEntity<ResponseEntity<User>> changePassword(
             @RequestBody ChangePasswordRequest request,
             Principal connectedUser
     ) {
-        return ResponseEntity.ok(service.changePassword(request, connectedUser));
+        return ResponseEntity.ok().body(service.changePassword(request, connectedUser));
     };
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        try {
-            service.forgotPassword(forgotPasswordRequest);
-        } catch (NotFoundException e) {
-            throw new NotFoundException(e.getMessage());
-        }
-        return ResponseEntity.ok().body("Password reset link has been sent.");
+        return ResponseEntity.ok().body(service.forgotPassword(forgotPasswordRequest));
     }
 
     @PutMapping("/reset-password")
@@ -60,15 +53,13 @@ public class UserController {
     }
 
     @PostMapping("/create-transaction-pin")
-    public ResponseEntity<String> createTransactionPin(@RequestBody String pin, Principal connectedUser) {
-        service.createTransactionPin(pin, connectedUser);
-        return ResponseEntity.ok("Transaction pin created successfully");
+    public ResponseEntity<ResponseEntity<String>> createTransactionPin(@RequestBody String pin, Principal connectedUser) {
+        return ResponseEntity.ok().body(service.createTransactionPin(pin, connectedUser));
     }
 
     @PatchMapping("/change-transaction-pin")
-    public ResponseEntity<String> changeTransactionPin(@RequestBody ChangePinRequest request, Principal connectedUser) {
-        service.changeTransactionPin(request.getOldPin(), request.getNewPin(), connectedUser);
-        return ResponseEntity.ok("Transaction pin changed successfully");
+    public ResponseEntity<ResponseEntity<String>> changeTransactionPin(@RequestBody ChangePinRequest request, Principal connectedUser) {
+        return ResponseEntity.ok().body(service.changeTransactionPin(request.getOldPin(), request.getNewPin(), connectedUser));
     }
 
 
