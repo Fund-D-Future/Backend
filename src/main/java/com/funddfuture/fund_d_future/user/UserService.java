@@ -121,20 +121,20 @@ public class UserService {
         return uuid.toString().substring(0, 6);
     }
 
-    public ResponseEntity<String> createTransactionPin(String pin, Principal connectedUser) {
+    public ResponseEntity<User> createTransactionPin(String pin, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         user.setTransactionPin(passwordEncoder.encode(pin));
-        repository.save(user);
-        return ResponseEntity.ok("Transaction pin created successfully");
+        ;
+        return ResponseEntity.ok(repository.save(user));
     }
 
-    public ResponseEntity<String> changeTransactionPin(String oldPin, String newPin, Principal connectedUser) {
+    public ResponseEntity<User> changeTransactionPin(String oldPin, String newPin, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         if (!passwordEncoder.matches(oldPin, user.getTransactionPin())) {
             throw new IllegalStateException("Incorrect old transaction pin");
         }
         user.setTransactionPin(passwordEncoder.encode(newPin));
-        repository.save(user);
-        return ResponseEntity.ok("Transaction pin changed successfully");
+        ;
+        return ResponseEntity.ok(repository.save(user));
     }
 }
