@@ -1,13 +1,18 @@
 package com.funddfuture.fund_d_future.exception;
 
 public class ErrorResponse {
-    private int statusCode;
-    private String message;
+    private String error;
 
-    public ErrorResponse(int statusCode, String message) {
-        this.statusCode = statusCode;
-        this.message = message;
+    public ErrorResponse(int value, String error) {
+        this.error = error;
     }
 
     // Getters and setters
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
 }
