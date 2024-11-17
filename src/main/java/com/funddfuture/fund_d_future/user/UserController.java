@@ -1,8 +1,6 @@
 package com.funddfuture.fund_d_future.user;
 
-import com.funddfuture.fund_d_future.exception.BadRequestException;
 import com.funddfuture.fund_d_future.exception.NotFoundException;
-import com.funddfuture.fund_d_future.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,17 +21,22 @@ public class UserController {
         return ResponseEntity.ok(userDetails);
     }
 
+    // src/main/java/com/funddfuture/fund_d_future/user/UserController.java
+    @PutMapping("/")
+    public ResponseEntity<User> updateUser(
+            Principal connectedUser,
+            @RequestBody UpdateUserRequest request
+    ) {
+        User updatedUser = service.updateUser(connectedUser, request);
+        return ResponseEntity.ok(updatedUser);
+    }
+
     @PatchMapping("/change-password")
-    public ResponseEntity<String> changePassword(
+    public ResponseEntity<ResponseEntity<String>> changePassword(
             @RequestBody ChangePasswordRequest request,
             Principal connectedUser
     ) {
-        try {
-            service.changePassword(request, connectedUser);
-        } catch (IllegalStateException e) {
-            throw new BadRequestException(e.getMessage());
-        }
-        return ResponseEntity.ok("Password changed successfully");
+        return ResponseEntity.ok(service.changePassword(request, connectedUser));
     };
 
     @PostMapping("/forgot-password")
