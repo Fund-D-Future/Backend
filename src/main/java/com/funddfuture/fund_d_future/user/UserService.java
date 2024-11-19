@@ -123,23 +123,22 @@ public class UserService {
         return uuid.toString().substring(0, 6);
     }
 
-    public ResponseEntity<User> createTransactionPin(String pin, Principal connectedUser) {
+    public ResponseEntity<User> createTransactionPin(CreatePinRequest request, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         if (user.getTransactionPin() != null) {
             throw new IllegalStateException("Transaction pin already exists");
         }
-        user.setTransactionPin(passwordEncoder.encode(pin));
+        user.setTransactionPin(passwordEncoder.encode(request.getPin()));
 
         return ResponseEntity.ok(repository.save(user));
     }
 
-    public ResponseEntity<User> changeTransactionPin(String oldPin, String newPin, Principal connectedUser) {
+    public ResponseEntity<User> changeTransactionPin(ChangePinRequest request, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-        if (!passwordEncoder.matches(oldPin, user.getTransactionPin())) {
+        if (!passwordEncoder.matches(request.getOldPin(), user.getTransactionPin())) {
             throw new IllegalStateException("Incorrect old transaction pin");
         }
-        user.setTransactionPin(passwordEncoder.encode(newPin));
-        ;
+        user.setTransactionPin(passwordEncoder.encode(request.getNewPin()));
         return ResponseEntity.ok(repository.save(user));
     }
 }

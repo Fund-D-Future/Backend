@@ -53,13 +53,13 @@ public class UserController {
     }
 
     @PostMapping("/create-transaction-pin")
-    public ResponseEntity<ResponseEntity<User>> createTransactionPin(@RequestBody String pin, Principal connectedUser) {
-        return ResponseEntity.ok(service.createTransactionPin(pin, connectedUser));
+    public ResponseEntity<ResponseEntity<User>> createTransactionPin(@RequestBody CreatePinRequest request, Principal connectedUser) {
+        return ResponseEntity.ok(service.createTransactionPin(request, connectedUser));
     }
 
     @PatchMapping("/change-transaction-pin")
     public ResponseEntity<ResponseEntity<User>> changeTransactionPin(@RequestBody ChangePinRequest request, Principal connectedUser) {
-        return ResponseEntity.ok().body(service.changeTransactionPin(request.getOldPin(), request.getNewPin(), connectedUser));
+        return ResponseEntity.ok().body(service.changeTransactionPin(request, connectedUser));
     }
 
 
