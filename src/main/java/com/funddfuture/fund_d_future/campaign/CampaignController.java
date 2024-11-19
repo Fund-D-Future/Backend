@@ -26,13 +26,13 @@ public class CampaignController {
     private final WalletService walletService;
 
     @PostMapping("/{id}/withdraw")
-    public ResponseEntity<Void> withdrawFunds(@PathVariable UUID id, @RequestBody WithdrawalRequest request, Principal principal) {
+    public ResponseEntity<ResponseEntity<Object>> withdrawFunds(@PathVariable UUID id, @RequestBody WithdrawalRequest request, Principal principal) {
 //        UUID userId = ((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getId();
         var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         UUID userId = user.getId();
         try {
             campaignService.withdrawFunds(id, request, userId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(campaignService.withdrawFunds(id, request, userId));
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
         }
