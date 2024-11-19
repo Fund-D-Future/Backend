@@ -217,8 +217,11 @@ public class CampaignService {
         if (wallet.getBalance() < request.getAmount()) {
             throw new RuntimeException("Insufficient funds");
         }
+        
 
-        if (!passwordEncoder.matches(request.getTransactionPin(), getAuthenticatedUser().getTransactionPin())) {
+        CharSequence tpin = request.getTransactionPin();
+        System.out.println(tpin);
+        if (!passwordEncoder.matches(tpin, getAuthenticatedUser().getTransactionPin())) {
             throw new RuntimeException("Invalid transaction pin");
         }
 

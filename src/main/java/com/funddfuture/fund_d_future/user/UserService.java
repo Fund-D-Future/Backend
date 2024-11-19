@@ -125,8 +125,11 @@ public class UserService {
 
     public ResponseEntity<User> createTransactionPin(String pin, Principal connectedUser) {
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        if (user.getTransactionPin() != null) {
+            throw new IllegalStateException("Transaction pin already exists");
+        }
         user.setTransactionPin(passwordEncoder.encode(pin));
-        ;
+
         return ResponseEntity.ok(repository.save(user));
     }
 
