@@ -282,15 +282,7 @@ public class CampaignService {
                 .addHeader("Content-Type", "application/json")
                 .build();
 
-        // Execute the request and handle the response
-        try (Response response = client.newCall(httpRequest).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response);
-            }
-            else {
-                return ResponseEntity.noContent().build();
-            }
-        }
+        return ResponseEntity.ok(client.newCall(httpRequest).execute());
     }
 
 
