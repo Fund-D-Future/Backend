@@ -220,8 +220,11 @@ public class CampaignService {
         
 
         CharSequence tpin = request.getTransactionPin();
+        boolean passwordMatches = passwordEncoder.matches(tpin, getAuthenticatedUser().getTransactionPin());
         System.out.println(tpin);
-        if (!passwordEncoder.matches(tpin, getAuthenticatedUser().getTransactionPin())) {
+        System.out.println(passwordMatches);
+
+        if (!passwordMatches) {
             throw new RuntimeException("Invalid transaction pin");
         }
 
