@@ -27,7 +27,9 @@ public class CampaignController {
 
     @PostMapping("/{id}/withdraw")
     public ResponseEntity<Void> withdrawFunds(@PathVariable UUID id, @RequestBody WithdrawalRequest request, Principal principal) {
-        UUID userId = ((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getId();
+//        UUID userId = ((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getId();
+        var user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        UUID userId = user.getId();
         try {
             campaignService.withdrawFunds(id, request, userId);
             return ResponseEntity.noContent().build();
