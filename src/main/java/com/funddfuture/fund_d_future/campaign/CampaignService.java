@@ -220,7 +220,7 @@ public class CampaignService {
         
 
         CharSequence tpin = request.getTransactionPin();
-        boolean passwordMatches = passwordEncoder.matches(tpin, getAuthenticatedUser().getTransactionPin());
+        boolean passwordMatches = passwordEncoder.matches(tpin, campaign.getOwner().getTransactionPin());
         System.out.println(tpin);
         System.out.println(passwordMatches);
 
